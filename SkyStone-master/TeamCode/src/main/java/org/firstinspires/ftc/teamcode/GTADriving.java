@@ -60,6 +60,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 public class GTADriving extends OpMode{
     int breakVal = 0;
     boolean loopFinished = false;
+    boolean open = false;
 
     /* Declare OpMode members. */
     HardwareStarTrek robot = new HardwareStarTrek(); // use the class created to define a Pushbot's hardware
@@ -116,15 +117,16 @@ public class GTADriving extends OpMode{
         robot.backLeft.setPower(v2);
         robot.backRight.setPower(v3);
         //}
-
+        //Test this please ^-^
         if (gamepad1.left_bumper) {
-            robot.FrontClaw.setPosition(robot.FrontClaw.getPosition()+0.02);
-            telemetry.addData("Front Claw", robot.FrontClaw.getPosition());
-        }
-
-        if (gamepad1.right_bumper) {
-            robot.Hook.setPosition(robot.Hook.getPosition()+0.02);
-            telemetry.addData("Hook", robot.FrontClaw.getPosition());
+            telemetry.addData("Hook", robot.Hook.getPosition());
+            if(robot.Hook.getPosition() == 0) {
+                robot.Hook.setPosition(1);
+            } else if(robot.Hook.getPosition() == 1) {
+                robot.Hook.setPosition(0);
+            } else {
+                telemetry.addData("Hook-Status", "Wait a second to bring down");
+            }
         }
 /*
 
@@ -160,6 +162,7 @@ public class GTADriving extends OpMode{
         if(gamePad==0) return false;
         else return true;
     }
+
     // Use gamepad left & right Bumpers to open and close the claw
     //Ty FTC but I think Im good 4 now ;)
         /*if (gamepad1.right_bumper)
