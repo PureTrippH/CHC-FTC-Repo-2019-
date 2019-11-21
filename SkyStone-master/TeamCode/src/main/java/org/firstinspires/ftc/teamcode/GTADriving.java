@@ -27,47 +27,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+//Imports
 package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import java.math.*;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
-
-/**
- * This file provides basic Telop driving for a Pushbot robot.
- * The code is structured as an Iterative OpMode
- *
- * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
- * All device access is managed through the HardwarePushbot class.
- *
- * This particular OpMode executes a basic Tank Drive Teleop for a PushBot
- * It raises and lowers the claw using the Gampad Y and A buttons respectively.
- * It also opens and closes the claws slowly using the left and right Bumper buttons.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
-
-
-@TeleOp(name="StarTrek: GTA Driving", group="Pushbot")
+//Main
+@TeleOp(name="StarTrek: GTA Driving")
 public class GTADriving extends OpMode{
-    int breakVal = 0;
-    boolean loopFinished = false;
-    boolean open = false;
+    //Declare Members
+    private HardwareStarTrek robot = new HardwareStarTrek();
 
-    /* Declare OpMode members. */
-    HardwareStarTrek robot = new HardwareStarTrek(); // use the class created to define a Pushbot's hardware
-
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+    //Initialization code
     @Override
     public void init() {
         robot.init(hardwareMap);
@@ -76,7 +48,7 @@ public class GTADriving extends OpMode{
         telemetry.addData("Say", "Ben, Hopefully you can drive.");    //
     }
 
-
+    //Unused loops
     @Override
     public void init_loop() {
     }
@@ -85,25 +57,18 @@ public class GTADriving extends OpMode{
     public void start() {
     }
 
-    //This is the actual driving controls
+    //ACTUAL DRIVING
     @Override
     public void loop() {
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         float forward = gamepad1.left_trigger; //Max:1
         float breaks = gamepad1.right_trigger; //Max:1
-        float turn = gamepad1.right_stick_x; //Max:1
         telemetry.addData("Say", Float.toString(forward + breaks));
-
         robot.frontRight.setDirection(DcMotor.Direction.REVERSE);
         robot.backRight.setDirection(DcMotor.Direction.REVERSE);
-          /*  if(Math.abs(strafe) > 0) {
-                robot.frontLeft.setPower(-strafe);
-                robot.backLeft.setPower(strafe);
-                robot.frontRight.setPower(-strafe);
-                robot.backRight.setPower(strafe);
-            }
-           */
+
+        //Strafing controls
         double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
         double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
         double rightX = -gamepad1.right_stick_x;
@@ -111,56 +76,39 @@ public class GTADriving extends OpMode{
         final double v1 = r * Math.sin(robotAngle) - rightX;
         final double v2 = r * Math.sin(robotAngle) + rightX;
         final double v3 = r * Math.cos(robotAngle) - rightX;
-        //if(!isButtonDown(gamepad1.left_trigger) || !isButtonDown(gamepad1.right_trigger)) {
+
+        //Powers Motors
         robot.frontLeft.setPower(v0);
         robot.frontRight.setPower(v1);
         robot.backLeft.setPower(v2);
         robot.backRight.setPower(v3);
-        //}
-        //Test this please ^-^
-        if (gamepad1.left_bumper) {
+
+        //Hook control
+        boolean Down = false;
+        if(gamepad1.left_bumper) {
             telemetry.addData("Hook", robot.Hook.getPosition());
-            if(robot.Hook.getPosition() == 0) {
-                robot.Hook.setPosition(1);
-            } else if(robot.Hook.getPosition() == 1) {
-                robot.Hook.setPosition(0);
-            } else {
-                telemetry.addData("Hook-Status", "Wait a second to bring down");
-            }
+            robot.Hook.setPosition(0.06);
+            Down = true;
         }
-/*
+        if (gamepad1.right_bumper) {
+            telemetry.addData("Hook", robot.Hook.getPosition());
+            robot.Hook.setPosition(0.8);
+            Down = false;
+        }
+        if (Down && robot.Hook.getPosition()!=0.06) {
+            telemetry.addData("Hook", "Attempting to resist slippage");
+            robot.Hook.setPosition(0.06);
+        }
 
-
-            if(Math.abs(turn) > 0) {
-                if(isButtonDown(forward)) {
-                    robot.frontLeft.setPower(-(turn-0.8));
-                    robot.backLeft.setPower(-(turn-0.8)); //If doesn't work write -(turn-0.8)
-                    robot.backRight.setPower(-(turn));
-                    robot.frontRight.setPower(-(turn));
-                } else {
-                    robot.frontLeft.setPower(-(turn));
-                    robot.backLeft.setPower(-(turn)); //If doesn't work write -(turn-0.8)
-                    robot.backRight.setPower(-(turn));
-                    robot.frontRight.setPower(-(turn));
-                }
-            }
-            */
-// trip sucks ey
-// How hysterical. I laughed.
-
-        /*if(!isButtonDown(gamepad1.left_stick_x) || !isButtonDown(gamepad1.left_stick_y))
-            robot.backLeft.setPower(forward-breaks); //Max: 1
-            robot.backRight.setPower(-forward+breaks); //Max: 1
-            robot.frontLeft.setPower(forward-breaks); //Max: 1
-            robot.frontRight.setPower(-forward+breaks); //Max: 1
-         */
-
-    }
-
-
-    public boolean isButtonDown(float gamePad) {
-        if(gamePad==0) return false;
-        else return true;
+        //Actuator control
+        if(gamepad1.dpad_down) {
+            telemetry.addData("Actuator", robot.Actuator.getPosition());
+            robot.Actuator.setPosition(1);
+        }
+        if(gamepad1.dpad_down == false) {
+            telemetry.addData("Actuator", robot.Actuator.getPosition());
+            robot.Actuator.setPosition(0);
+        }
     }
 
     // Use gamepad left & right Bumpers to open and close the claw
@@ -195,5 +143,3 @@ public class GTADriving extends OpMode{
      * Code to run ONCE after the driver hits STOP
      */
 }
-
-

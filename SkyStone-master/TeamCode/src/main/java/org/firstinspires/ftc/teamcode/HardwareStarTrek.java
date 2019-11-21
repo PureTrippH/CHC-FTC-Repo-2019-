@@ -57,6 +57,7 @@ public class HardwareStarTrek
     public DcMotor  frontLeft  = null;
     public DcMotor  frontRight = null;
     public DcMotor  backRight = null;
+    //public DcMotorSimple Actuator = null;
     public Servo Actuator = null;
     public Servo FrontClaw = null;
     public Servo Hook = null;
@@ -99,7 +100,7 @@ public class HardwareStarTrek
         FrontClaw = hwMap.get(Servo.class, "FrontClaw");
         Hook = hwMap.get(Servo.class, "Hook");
         FrontClaw.setPosition(0);
-        Hook.setPosition(0);
+        Hook.setPosition(0.8);
     }
  }
 
