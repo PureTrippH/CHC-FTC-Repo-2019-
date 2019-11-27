@@ -59,7 +59,7 @@ public class HardwareStarTrek
     public DcMotor  backRight = null;
     //public DcMotorSimple Actuator = null;
     public Servo Actuator = null;
-    public Servo FrontClaw = null;
+    public CRServo FrontClaw = null;
     public Servo Hook = null;
 
     /* local OpMode members. */
@@ -97,7 +97,7 @@ public class HardwareStarTrek
 
         // Define and initialize ALL installed servos.
         Actuator  = hwMap.get(Servo.class, "Actuator");
-        FrontClaw = hwMap.get(Servo.class, "FrontClaw");
+        FrontClaw = hwMap.get(CRServo.class, "FrontClaw");
         Hook = hwMap.get(Servo.class, "Hook");
         FrontClaw.setPosition(0);
         Hook.setPosition(0.8);

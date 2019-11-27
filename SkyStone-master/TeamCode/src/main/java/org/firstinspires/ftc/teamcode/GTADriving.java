@@ -111,6 +111,41 @@ public class GTADriving extends OpMode{
         }
     }
 
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            int position = 1;
+            int direction = 1;
+            if (gamepad1.dpad_left) {
+                position--;
+            }
+            if (gamepad1.dpad_right) {
+                position++;
+            }
+            if (position == 0) {
+                position = 3;
+            }
+            if (position == 4) {
+                position = 1;
+            }
+            if (position == 1) {
+                direction = 1;
+                robot.FrontClaw.setPower(1);
+            }
+            if (position == 2 && direction == 1) {
+                robot.FrontClaw.setPower(-1);
+            }
+            if (position == 2 && direction == 2) {
+                robot.FrontClaw.setPower(1);
+            }
+            if (position == 3) {
+                direction = 2;
+                robot.FrontClaw.setPower(-1);
+            }
+        }
+    };
+    Thread thread = new Thread(runnable);
+
     // Use gamepad left & right Bumpers to open and close the claw
     //Ty FTC but I think Im good 4 now ;)
         /*if (gamepad1.right_bumper)
@@ -142,4 +177,9 @@ public class GTADriving extends OpMode{
     /*
      * Code to run ONCE after the driver hits STOP
      */
+        public boolean isButtonDown(float gamePad) {
+            if (gamePad == 0) return false;
+            else return true;
+        }
 }
+
